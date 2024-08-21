@@ -4,6 +4,7 @@ import com.laboratorio.mastodonapiinterface.MastodonNotificationApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.impl.MastodonNotificationApiImpl;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonNotificationListResponse;
+import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +14,15 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 16/08/2024
+ * @updated 21/08/2024
  */
 public class MastodonNotificationApiTest {
-    private final String accessToken = "2GevJ32dJQdHzcqgTEYTI01BVrkmjnO9K512yp59pek";
+    private String accessToken;
     private MastodonNotificationApi notificationApi;
     
     @BeforeEach
     private void initNotificationApi() {
+        this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
         this.notificationApi = new MastodonNotificationApiImpl(this.accessToken);
     }
     

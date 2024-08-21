@@ -6,6 +6,7 @@ import com.laboratorio.mastodonapiinterface.impl.MastodonStatusApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
+import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,18 +20,19 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 16/08/2024
+ * @updated 21/08/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonStatusApiTest {
-    private final String accessToken = "2GevJ32dJQdHzcqgTEYTI01BVrkmjnO9K512yp59pek";
+    private String accessToken;
     private MastodonStatusApi statusApi;
     private static String idElim = "";
     private static int operationCount;
     
     @BeforeEach
     private void initTests() {
+        this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
         this.statusApi = new MastodonStatusApiImpl(this.accessToken);
     }
     

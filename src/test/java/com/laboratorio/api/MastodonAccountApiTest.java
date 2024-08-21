@@ -6,6 +6,7 @@ import com.laboratorio.mastodonapiinterface.impl.MastodonAccountApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonRelationship;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
+import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,15 +20,16 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 16/08/2024
+ * @updated 21/08/2024
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonAccountApiTest {
-    private final String accessToken = "2GevJ32dJQdHzcqgTEYTI01BVrkmjnO9K512yp59pek";
+    private String accessToken;
     private MastodonAccountApi accountApi;
 
     @BeforeEach
     private void initTest() {
+        this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
         this.accountApi = new MastodonAccountApiImpl(this.accessToken);
     }
     
