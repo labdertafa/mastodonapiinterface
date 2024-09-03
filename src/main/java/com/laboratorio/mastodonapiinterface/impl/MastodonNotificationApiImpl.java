@@ -51,7 +51,7 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
             WebTarget target = client.target(url)
                         .queryParam("limit", limit);
             if (posicionInicial != null) {
-                target = target.queryParam("max_id", posicionInicial);
+                target = target.queryParam("since_id", posicionInicial);
             }
             
             response = target.request(MediaType.APPLICATION_JSON)
