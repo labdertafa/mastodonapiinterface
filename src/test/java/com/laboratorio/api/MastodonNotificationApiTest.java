@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 21/08/2024
+ * @updated 05/09/2024
  */
 public class MastodonNotificationApiTest {
     private String accessToken;
@@ -33,7 +33,7 @@ public class MastodonNotificationApiTest {
         MastodonNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(0, cantidad);
 
         assertEquals(cantidad, notificationListResponse.getNotifications().size());
-        assertTrue(notificationListResponse.getMaxId() != null);
+        assertTrue(notificationListResponse.getMinId() != null);
     }
     
     @Test
@@ -44,7 +44,7 @@ public class MastodonNotificationApiTest {
         MastodonNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(limit, cantidad);
 
         assertEquals(cantidad, notificationListResponse.getNotifications().size());
-        assertTrue(notificationListResponse.getMaxId() != null);
+        assertTrue(notificationListResponse.getMinId() != null);
     }
     
     @Test
@@ -54,15 +54,15 @@ public class MastodonNotificationApiTest {
         MastodonNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(0, cantidad);
 
         assertEquals(cantidad, notificationListResponse.getNotifications().size());
-        assertTrue(notificationListResponse.getMaxId() != null);
+        assertTrue(notificationListResponse.getMinId() != null);
     }
     
     @Test
     public void getAllNotifications() throws Exception {
-        MastodonNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications();
+        MastodonNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(80);
 
         assertTrue(notificationListResponse.getNotifications().size() > 20);
-        assertTrue(notificationListResponse.getMaxId() != null);
+        assertTrue(notificationListResponse.getMinId() != null);
     }
     
     @Test
@@ -76,11 +76,11 @@ public class MastodonNotificationApiTest {
     
     @Test
     public void getNotificationsWithSinceId() throws Exception {
-        String sinceId = "282577256";
+        String sinceId = "312961068";
 
         MastodonNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(0, 0, sinceId);
 
         assertTrue(notificationListResponse.getNotifications().size() >= 0);
-        assertTrue(notificationListResponse.getMaxId() != null);
+        assertTrue(notificationListResponse.getMinId() != null);
     }
 }

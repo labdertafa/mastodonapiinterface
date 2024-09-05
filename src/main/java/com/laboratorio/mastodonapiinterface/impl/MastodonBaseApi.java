@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 16/08/2024
+ * @updated 05/09/2024
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
@@ -48,6 +48,20 @@ public class MastodonBaseApi {
     protected String extractMaxId(String str) {
         String maxId = null;
         String regex = "max_id=(\\d+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        
+        if (matcher.find()) {
+            maxId = matcher.group(1); // El primer grupo de captura contiene el valor de max_id
+        }
+        
+        return maxId;
+    }
+    
+    // Función que extrae el min_id de la respuesta
+    protected String extractMinId(String str) {
+        String maxId = null;
+        String regex = "min_id=(\\d+)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(str);
         

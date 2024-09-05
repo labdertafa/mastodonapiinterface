@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 16/08/2024
+ * @updated 05/09/2024
  */
 public class MastodonNotificationApiImpl extends MastodonBaseApi implements MastodonNotificationApi {
     public MastodonNotificationApiImpl(String accessToken) {
@@ -49,10 +49,8 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
         
         try {
             WebTarget target = client.target(url)
-                        .queryParam("limit", limit);
-            if (posicionInicial != null) {
-                target = target.queryParam("since_id", posicionInicial);
-            }
+                    .queryParam("limit", limit)
+                    .queryParam("min_id", posicionInicial);
             
             response = target.request(MediaType.APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
@@ -66,7 +64,7 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
             }
             
             Gson gson = new Gson();
-            String maxId = posicionInicial;
+            String minId = posicionInicial;
             List<MastodonNotification> notifications = gson.fromJson(jsonStr, new TypeToken<List<MastodonNotification>>(){}.getType());
             if (!notifications.isEmpty()) {
                 log.debug("Se ejecutó la query: " + url);
@@ -74,12 +72,12 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
 
                 String linkHeader = response.getHeaderString("link");
                 log.debug("Recibí este link: " + linkHeader);
-                maxId = this.extractMaxId(linkHeader);
-                log.debug("Valor del max_id: " + maxId);
+                minId = this.extractMinId(linkHeader);
+                log.debug("Valor del min_id: " + minId);
             }
 
             // return accounts;
-            return new MastodonNotificationListResponse(maxId, notifications);
+            return new MastodonNotificationListResponse(minId, notifications);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
@@ -105,7 +103,10 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
         }
         List<MastodonNotification> notifications = null;
         boolean continuar = true;
-        String max_id = posicionInicial;
+        String min_id = "0";
+        if (posicionInicial != null) {
+            min_id = posicionInicial;
+        }
         
         if (quantity > 0) {
             usedLimit = Math.min(usedLimit, quantity);
@@ -113,24 +114,24 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
         
         try {
             do {
-                MastodonNotificationListResponse notificationListResponse = getNotificationPage(endpoint, usedLimit, okStatus, max_id);
+                MastodonNotificationListResponse notificationListResponse = getNotificationPage(endpoint, usedLimit, okStatus, min_id);
                 if (notifications == null) {
                     notifications = notificationListResponse.getNotifications();
                 } else {
                     notifications.addAll(notificationListResponse.getNotifications());
                 }
                 
-                max_id = notificationListResponse.getMaxId();
-                log.debug("getFollowers. Cantidad: " + quantity + ". Recuperados: " + notifications.size() + ". Max_id: " + max_id);
+                min_id = notificationListResponse.getMinId();
+                log.debug("getFollowers. Cantidad: " + quantity + ". Recuperados: " + notifications.size() + ". Min_id: " + min_id);
                 if (notificationListResponse.getNotifications().isEmpty()) {
                     continuar = false;
                 } else {
                     if (quantity > 0) {
-                        if ((notifications.size() >= quantity) || (max_id == null)) {
+                        if (notifications.size() >= quantity) {
                             continuar = false;
                         }
                     } else {
-                        if ((max_id == null) || (notificationListResponse.getNotifications().size() < usedLimit)) {
+                        if (notificationListResponse.getNotifications().size() < usedLimit) {
                             continuar = false;
                         }
                     }
@@ -138,10 +139,10 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
             } while (continuar);
 
             if (quantity == 0) {
-                return new MastodonNotificationListResponse(max_id, notifications);
+                return new MastodonNotificationListResponse(min_id, notifications);
             }
             
-            return new MastodonNotificationListResponse(max_id, notifications.subList(0, Math.min(quantity, notifications.size())));
+            return new MastodonNotificationListResponse(min_id, notifications.subList(0, Math.min(quantity, notifications.size())));
         } catch (Exception e) {
             throw e;
         }

@@ -141,7 +141,6 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             
             response = target.request()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    // .header(HttpHeaders.ACCEPT, "*/*")
                     .post(Entity.entity(formDataOutput, MediaType.MULTIPART_FORM_DATA));
             
             String jsonStr = response.readEntity(String.class);
