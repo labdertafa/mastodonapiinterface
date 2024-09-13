@@ -114,7 +114,7 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
         
         try {
             do {
-                MastodonNotificationListResponse notificationListResponse = getNotificationPage(endpoint, usedLimit, okStatus, min_id);
+                MastodonNotificationListResponse notificationListResponse = this.getNotificationPage(endpoint, usedLimit, okStatus, min_id);
                 if (notifications == null) {
                     notifications = notificationListResponse.getNotifications();
                 } else {

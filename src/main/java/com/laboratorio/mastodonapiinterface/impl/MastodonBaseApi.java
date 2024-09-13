@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 05/09/2024
+ * @updated 09/09/2024
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
@@ -40,7 +40,7 @@ public class MastodonBaseApi {
     protected void logException(Exception e) {
         log.error("Error: " + e.getMessage());
         if (e.getCause() != null) {
-            log.error("Causa: " + e.getMessage());
+            log.error("Causa: " + e.getCause().getMessage());
         }
     }
     

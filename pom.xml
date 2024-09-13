@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.laboratorio</groupId>
     <artifactId>mastodonapiinterface</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
     <name>Mastodon-Api-Interface</name>
-    <description>Librería que ejecutar las API de la red social Mastodon</description>
+    <description>Librería que ejecuta las API de la red social Mastodon</description>
     
     <url>https://github.com/labdertafa/mastodonapiinterface</url>
     <licenses>

@@ -8,7 +8,6 @@ import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonRelationship;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
-import com.laboratorio.mastodonapiinterface.model.response.MastodonFollowResponse;
 import com.laboratorio.mastodonapiinterface.utils.InstruccionInfo;
 import java.util.List;
 import javax.ws.rs.client.Client;
@@ -24,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 16/08/2024
+ * @updated 11/09/2024
  */
 public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonAccountApi {
     public MastodonAccountApiImpl(String accessToken) {
@@ -199,7 +198,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             log.debug("Respuesta JSON recibida: " + jsonStr);
             
             Gson gson = new Gson();
-            MastodonFollowResponse followResponse = gson.fromJson(jsonStr, MastodonFollowResponse.class);
+            MastodonRelationship followResponse = gson.fromJson(jsonStr, MastodonRelationship.class);
             return followResponse.isFollowing();
         } catch (JsonSyntaxException e) {
             logException(e);
@@ -241,8 +240,8 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             log.debug("Respuesta JSON recibida: " + jsonStr);
             
             Gson gson = new Gson();
-            MastodonFollowResponse followResponse = gson.fromJson(jsonStr, MastodonFollowResponse.class);
-            return !followResponse.isFollowing();
+            MastodonRelationship unfollowResponse = gson.fromJson(jsonStr, MastodonRelationship.class);
+            return !unfollowResponse.isFollowing();
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
