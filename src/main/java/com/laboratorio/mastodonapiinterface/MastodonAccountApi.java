@@ -10,7 +10,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 16/07/2024
+ * @updated 16/09/2024
  */
 public interface MastodonAccountApi {
     // Obtiene la información de un usuario a partir de su ID
@@ -33,4 +33,7 @@ public interface MastodonAccountApi {
     boolean unfollowAccount(String id);
     // Chequea la relación con un listado de cuentas identificadas por su id
     List<MastodonRelationship> checkrelationships(List<String> ids);
+    // Consultar las sugerencias de seguimiento
+    List<MastodonAccount> getSuggestions();
+    List<MastodonAccount> getSuggestions(int limit);
 }

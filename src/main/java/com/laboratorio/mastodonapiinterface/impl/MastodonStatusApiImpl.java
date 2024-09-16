@@ -1,7 +1,7 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.mastodonapiinterface.MastodonStatusApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
@@ -9,29 +9,14 @@ import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
 import com.laboratorio.mastodonapiinterface.utils.InstruccionInfo;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter;
 
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 24/07/2024
- * @updated 16/08/2024
+ * @updated 16/09/2024
  */
 public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonStatusApi {
     public MastodonStatusApiImpl(String accessToken) {
@@ -40,41 +25,22 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
     
     @Override
     public MastodonStatus getStatusById(String id) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("getStatusById_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getStatusById_ok_status"));
         
         try {
-            String url = endpoint + "/" + id;
-            WebTarget target = client.target(url);
+            String uri = endpoint + "/" + id;
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiHeader("Content-Type", "application/json");
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            String jsonStr = this.client.executeGetRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, MastodonStatus.class);
+            return this.gson.fromJson(jsonStr, MastodonStatus.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (MastondonApiException e) {
-            throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
 
@@ -85,133 +51,94 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
 
     @Override
     public MastodonStatus deleteStatus(String id) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("deleteStatus_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("deleteStatus_ok_status"));
         
         try {
-            String url = endpoint + "/" + id;
-            WebTarget target = client.target(url);
+            String uri = endpoint + "/" + id;
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .delete();
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
+            String jsonStr = this.client.executeDeleteRequest(request);
             
-            log.debug("Se ejecutó la query: " + url);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, MastodonStatus.class);
+            return this.gson.fromJson(jsonStr, MastodonStatus.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
-        } catch (MastondonApiException e) {
-            throw  e;
-        } finally {
-            if (response != null) {
-                response.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+        }
+    }
+    
+    @Override
+    public MastodonStatus postStatusWithImage(String text, MastodonMediaAttachment mediaAttachment) {
+        String endpoint = this.apiConfig.getProperty("postStatus_endpoint");
+        int okStatus = Integer.parseInt(this.apiConfig.getProperty("postStatus_ok_status"));
+        
+        try {
+            String uri = endpoint;
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiPathParam("status", text);
+            request.addApiPathParam("visibility", "public");
+            request.addApiPathParam("language", "es");
+            if (mediaAttachment != null) {
+                request.addApiPathParam("media_ids[]", mediaAttachment.getId());
             }
-            client.close();
+            
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
+            
+            String jsonStr = this.client.executePostRequest(request);
+            
+            return this.gson.fromJson(jsonStr, MastodonStatus.class);
+        } catch (JsonSyntaxException e) {
+            logException(e);
+            throw  e;
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+        }
+    }
+    
+    @Override
+    public MastodonStatus postStatus(String text, String filePath) {
+        try {
+            if (filePath != null) {
+                MastodonMediaAttachment mediaAttachment = this.uploadImage(filePath);
+                return this.postStatusWithImage(text, mediaAttachment);
+            }
+            
+            return this.postStatusWithImage(text, null);
+        } catch (JsonSyntaxException e) {
+            logException(e);
+            throw  e;
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
     
     @Override
     public MastodonMediaAttachment uploadImage(String filePath) throws Exception {
-        ResteasyClient client = (ResteasyClient)ResteasyClientBuilder.newBuilder().build();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("UploadImage_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("UploadImage_ok_status"));
         
         try {
-            String url = endpoint;
-            WebTarget target = client.target(url)
-                    .register(MultipartFormDataWriter.class);
+            String uri = endpoint;
             
-            MultipartFormDataOutput formDataOutput = new MultipartFormDataOutput();
-            File imageFile = new File(filePath);
-            InputStream fileStream = new FileInputStream(imageFile);
-            formDataOutput.addFormData("file", fileStream, MediaType.APPLICATION_OCTET_STREAM_TYPE, imageFile.getName());
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
+            request.addFileFormData("file", filePath);
+                        
+            String jsonStr = this.client.executePostRequest(request);
             
-            response = target.request()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .post(Entity.entity(formDataOutput, MediaType.MULTIPART_FORM_DATA));
-            
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d. Detalle: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
-            
-            log.info("Se ejecutó la query: " + url);
-            log.info("Respuesta recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, MastodonMediaAttachment.class);
-        } catch (JsonSyntaxException | FileNotFoundException e) {
-            logException(e);
-            throw  e;
-        } catch (MastondonApiException e) {
-            throw  e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
-        }
-    }
-    
-    @Override
-    public MastodonStatus postStatus(String text, String imagenId) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
-        String endpoint = this.apiConfig.getProperty("postStatus_endpoint");
-        int okStatus = Integer.parseInt(this.apiConfig.getProperty("postStatus_ok_status"));
-        
-        try {
-            String url = endpoint;
-            WebTarget target = client.target(url)
-                    .queryParam("status", text)
-                    .queryParam("visibility", "public")
-                    .queryParam("language", "es");
-            
-            if (imagenId != null) {
-                target = target.queryParam("media_ids[]", imagenId);
-            }
-            
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .post(Entity.text(""));
-            
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.info("Respuesta recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, MastodonStatus.class);
+            return this.gson.fromJson(jsonStr, MastodonMediaAttachment.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
-        } catch (MastondonApiException e) {
-            throw  e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
     
@@ -267,39 +194,21 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         return accountListResponse.getAccounts();
     }
     
-    private MastodonStatus executeSimplePost(String url, int okStatus) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
-        
+    private MastodonStatus executeSimplePost(String uri, int okStatus) {
         try {
-            WebTarget target = client.target(url);
+            ApiRequest request = new ApiRequest(uri, okStatus);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .post(Entity.text(""));
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
+            String jsonStr = this.client.executePostRequest(request);
             
-            log.debug("Se ejecutó la query: " + url);
-            log.info("Respuesta recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, MastodonStatus.class);
+            return this.gson.fromJson(jsonStr, MastodonStatus.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
-        } catch (MastondonApiException e) {
-            throw  e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
 

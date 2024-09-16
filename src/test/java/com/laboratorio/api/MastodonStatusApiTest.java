@@ -4,7 +4,6 @@ import com.laboratorio.mastodonapiinterface.MastodonStatusApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.impl.MastodonStatusApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
-import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
 import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 21/08/2024
+ * @updated 16/15/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -95,10 +94,7 @@ public class MastodonStatusApiTest {
         String imagen = "C:\\Users\\rafa\\Pictures\\Formula_1\\Spa_1950.jpg";
         String text = "Hola, les saludo desde El laboratorio de Rafa. Post automático";
         
-        MastodonMediaAttachment media = this.statusApi.uploadImage(imagen);
-        assertTrue(media.getPreview_url() != null);
-        
-        MastodonStatus status = this.statusApi.postStatus(text, media.getId());
+        MastodonStatus status = this.statusApi.postStatus(text, imagen);
         idElim = status.getId();
         assertTrue(!status.getId().isEmpty());
         assertTrue(status.getContent().contains(text));

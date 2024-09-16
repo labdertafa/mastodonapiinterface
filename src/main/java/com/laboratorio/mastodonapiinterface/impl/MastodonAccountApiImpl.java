@@ -1,29 +1,24 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.mastodonapiinterface.MastodonAccountApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonRelationship;
+import com.laboratorio.mastodonapiinterface.model.MastodonSuggestion;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
 import com.laboratorio.mastodonapiinterface.utils.InstruccionInfo;
 import java.util.List;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 10/07/2024
- * @updated 11/09/2024
+ * @updated 16/09/2024
  */
 public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonAccountApi {
     public MastodonAccountApiImpl(String accessToken) {
@@ -32,82 +27,45 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
     
     @Override
     public MastodonAccount getAccountById(String id) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("getAccountById_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getAccountById_ok_status"));
         
         try {
             String url = endpoint + "/" + id;
-            WebTarget target = client.target(url);
+            ApiRequest request = new ApiRequest(url, okStatus);
+            request.addApiHeader("Content-Type", "application/json");
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            String jsonStr = this.client.executeGetRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, MastodonAccount.class);
+            return this.gson.fromJson(jsonStr, MastodonAccount.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (MastondonApiException e) {
-            throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
     
     @Override
     public MastodonAccount getAccountByUsername(String username) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("getAccountByUsername_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getAccountByUsername_ok_status"));
         
         try {
             String url = endpoint;
-            WebTarget target = client.target(url)
-                    .queryParam("acct", username);
+            ApiRequest request = new ApiRequest(url, okStatus);
+            request.addApiPathParam("acct", username);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            request.addApiHeader("Content-Type", "application/json");
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
+            String jsonStr = this.client.executeGetRequest(request);
             
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, MastodonAccount.class);
+            return this.gson.fromJson(jsonStr, MastodonAccount.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (MastondonApiException e) {
-            throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
     
@@ -173,128 +131,112 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
     
     @Override
     public boolean followAccount(String id) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("followAccount_endpoint");
         String complementoUrl = this.apiConfig.getProperty("followAccount_complemento_url");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("followAccount_ok_status"));
         
         try {
-            String url = endpoint + "/" + id + "/" + complementoUrl;
-            WebTarget target = client.target(url);
+            String uri = endpoint + "/" + id + "/" + complementoUrl;
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .post(Entity.text(""));
+            String jsonStr = this.client.executePostRequest(request);
+            MastodonRelationship relationship = this.gson.fromJson(jsonStr, MastodonRelationship.class);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            MastodonRelationship followResponse = gson.fromJson(jsonStr, MastodonRelationship.class);
-            return followResponse.isFollowing();
+            return relationship.isFollowing();
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
-        } catch (MastondonApiException e) {
-            throw  e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
     
     @Override
     public boolean unfollowAccount(String id) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("unfollowAccount_endpoint");
         String complementoUrl = this.apiConfig.getProperty("unfollowAccount_complemento_url");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("unfollowAccount_ok_status"));
         
         try {
-            String url = endpoint + "/" + id + "/" + complementoUrl;
-            WebTarget target = client.target(url);
+            String uri = endpoint + "/" + id + "/" + complementoUrl;
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .post(Entity.text(""));
+            String jsonStr = this.client.executePostRequest(request);
+            MastodonRelationship relationship = this.gson.fromJson(jsonStr, MastodonRelationship.class);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            MastodonRelationship unfollowResponse = gson.fromJson(jsonStr, MastodonRelationship.class);
-            return !unfollowResponse.isFollowing();
+            return !relationship.isFollowing();
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
-        } catch (MastondonApiException e) {
-            throw  e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
     
     @Override
     public List<MastodonRelationship> checkrelationships(List<String> ids) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("checkrelationships_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("checkrelationships_ok_status"));
         
         try {
-            String url = endpoint;
-            WebTarget target = client.target(url);
+            String uri = endpoint;
+            ApiRequest request = new ApiRequest(uri, okStatus);
             for (String id : ids) {
-                target = target.queryParam("id[]", id);
+                request.addApiPathParam("id[]", id);
             }
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            String jsonStr = this.client.executeGetRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, new TypeToken<List<MastodonRelationship>>(){}.getType());
+            return this.gson.fromJson(jsonStr, new TypeToken<List<MastodonRelationship>>(){}.getType());
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (MastondonApiException e) {
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+        }
+    }
+
+    @Override
+    public List<MastodonAccount> getSuggestions() {
+        return this.getSuggestions(0);
+    }
+
+    @Override
+    public List<MastodonAccount> getSuggestions(int limit) {
+        String endpoint = this.apiConfig.getProperty("getSuggestions_endpoint");
+        int okStatus = Integer.parseInt(this.apiConfig.getProperty("getSuggestions_ok_status"));
+        int defaultLimit = Integer.parseInt(this.apiConfig.getProperty("getSuggestions_default_limit"));
+        int maxLimit = Integer.parseInt(this.apiConfig.getProperty("getSuggestions_max_limit"));
+        int usedLimit = limit;
+        if ((limit == 0) || (limit > maxLimit)) {
+            usedLimit = defaultLimit;
+        }
+        
+        try {
+            String uri = endpoint;
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiPathParam("limit", Integer.toString(usedLimit));
+         
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
+            
+            String jsonStr = this.client.executeGetRequest(request);
+            List<MastodonSuggestion> suggestions = this.gson.fromJson(jsonStr, new TypeToken<List<MastodonSuggestion>>(){}.getType());
+            
+            return suggestions.stream()
+                    .map(s -> s.getAccount())
+                    .collect(Collectors.toList());
+        } catch (JsonSyntaxException e) {
+            logException(e);
             throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
 }

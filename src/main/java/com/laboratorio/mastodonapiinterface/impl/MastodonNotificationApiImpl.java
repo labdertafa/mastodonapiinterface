@@ -1,26 +1,21 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.model.ApiRequest;
+import com.laboratorio.clientapilibrary.model.ProcessedResponse;
 import com.laboratorio.mastodonapiinterface.MastodonNotificationApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonNotification;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonNotificationListResponse;
 import java.util.List;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 25/07/2024
- * @updated 05/09/2024
+ * @updated 15/09/2024
  */
 public class MastodonNotificationApiImpl extends MastodonBaseApi implements MastodonNotificationApi {
     public MastodonNotificationApiImpl(String accessToken) {
@@ -43,34 +38,24 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
     }
     
     // Función que devuelve una página de notificaciones de una cuenta
-    private MastodonNotificationListResponse getNotificationPage(String url, int limit, int okStatus, String posicionInicial) throws Exception {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
-        
+    private MastodonNotificationListResponse getNotificationPage(String uri, int limit, int okStatus, String posicionInicial) throws Exception {
         try {
-            WebTarget target = client.target(url)
-                    .queryParam("limit", limit)
-                    .queryParam("min_id", posicionInicial);
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiPathParam("limit", Integer.toString(limit));
+            request.addApiPathParam("min_id", posicionInicial);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonNotificationApiImpl.class.getName(), str);
-            }
+            ProcessedResponse response = this.client.getProcessedResponseGetRequest(request);
             
-            Gson gson = new Gson();
             String minId = posicionInicial;
-            List<MastodonNotification> notifications = gson.fromJson(jsonStr, new TypeToken<List<MastodonNotification>>(){}.getType());
+            List<MastodonNotification> notifications = this.gson.fromJson(response.getResponseDetail(), new TypeToken<List<MastodonNotification>>(){}.getType());
             if (!notifications.isEmpty()) {
-                log.debug("Se ejecutó la query: " + url);
+                log.debug("Se ejecutó la query: " + uri);
                 log.debug("Resultados encontrados: " + notifications.size());
 
-                String linkHeader = response.getHeaderString("link");
+                String linkHeader = response.getResponse().getHeaderString("link");
                 log.debug("Recibí este link: " + linkHeader);
                 minId = this.extractMinId(linkHeader);
                 log.debug("Valor del min_id: " + minId);
@@ -81,13 +66,8 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (MastondonApiException e) {
-            throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
 

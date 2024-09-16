@@ -10,7 +10,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 16/08/2024
+ * @updated 16/09/2024
  */
 public interface MastodonStatusApi {
     // Consultar un status por su id
@@ -19,10 +19,11 @@ public interface MastodonStatusApi {
     // Postear o eliminar un status.
     MastodonStatus postStatus(String text);
     MastodonStatus deleteStatus(String id);
+    MastodonStatus postStatusWithImage(String text, MastodonMediaAttachment mediaAttachment);
+    MastodonStatus postStatus(String text, String filePath);
     
-    // Postear un status con imagen
+    // Subir una imagen
     MastodonMediaAttachment uploadImage(String filePath) throws Exception;
-    MastodonStatus postStatus(String text, String imagenId);
     
     // Ver las cuentas que han impulsado o marcado como favorito un status
     List<MastodonAccount> getRebloggedBy(String id) throws Exception;

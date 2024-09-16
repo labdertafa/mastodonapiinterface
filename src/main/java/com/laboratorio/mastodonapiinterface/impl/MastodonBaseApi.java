@@ -3,6 +3,10 @@ package com.laboratorio.mastodonapiinterface.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.ApiClient;
+import com.laboratorio.clientapilibrary.impl.ApiClientImpl;
+import com.laboratorio.clientapilibrary.model.ApiRequest;
+import com.laboratorio.clientapilibrary.model.ProcessedResponse;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
@@ -11,30 +15,28 @@ import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 24/07/2024
- * @updated 09/09/2024
+ * @updated 15/09/2024
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
+    protected final ApiClient client;
     protected final String accessToken;
     protected MastodonApiConfig apiConfig;
+    protected final Gson gson;
 
     public MastodonBaseApi(String accessToken) {
+        this.client = new ApiClientImpl();
         this.accessToken = accessToken;
         this.apiConfig = MastodonApiConfig.getInstance();
+        this.gson = new Gson();
     }
     
     protected void logException(Exception e) {
@@ -73,37 +75,26 @@ public class MastodonBaseApi {
     }
     
     // Función que devuelve una página de seguidores o seguidos de una cuenta
-    private MastodonAccountListResponse getAccountPage(String endpoint, String complemento, int okStatus, String id, int limit, String posicionInicial) throws Exception {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
-        
+    private MastodonAccountListResponse getAccountPage(String uri, int okStatus, int limit, String posicionInicial) throws Exception {
         try {
-            String url = endpoint + "/" + id + "/" + complemento;
-            WebTarget target = client.target(url)
-                        .queryParam("limit", limit);
+            ApiRequest request = new ApiRequest(uri, okStatus);
+            request.addApiPathParam("limit", Integer.toString(limit));
             if (posicionInicial != null) {
-                target = target.queryParam("max_id", posicionInicial);
+                request.addApiPathParam("max_id", posicionInicial);
             }
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new MastondonApiException(MastodonBaseApi.class.getName(), str);
-            }
+            ProcessedResponse response = this.client.getProcessedResponseGetRequest(request);
             
-            Gson gson = new Gson();
-            List<MastodonAccount> accounts = gson.fromJson(jsonStr, new TypeToken<List<MastodonAccount>>(){}.getType());
+            List<MastodonAccount> accounts = this.gson.fromJson(response.getResponseDetail(), new TypeToken<List<MastodonAccount>>(){}.getType());
             String maxId = null;
             if (!accounts.isEmpty()) {
-                log.debug("Se ejecutó la query: " + url);
+                log.debug("Se ejecutó la query: " + uri);
                 log.debug("Resultados encontrados: " + accounts.size());
 
-                String linkHeader = response.getHeaderString("link");
+                String linkHeader = response.getResponse().getHeaderString("link");
                 log.debug("Recibí este link: " + linkHeader);
                 maxId = this.extractMaxId(linkHeader);
                 log.debug("Valor del max_id: " + maxId);
@@ -114,17 +105,12 @@ public class MastodonBaseApi {
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (MastondonApiException e) {
-            throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
         }
     }
     
-    protected MastodonAccountListResponse getMastodonAccountList(InstruccionInfo instruccionInfo, String id, int quantity, String posicionInicial) throws Exception {
+    protected MastodonAccountListResponse getMastodonAccountList(InstruccionInfo instruccionInfo, String userId, int quantity, String posicionInicial) throws Exception {
         List<MastodonAccount> accounts = null;
         boolean continuar = true;
         String endpoint = instruccionInfo.getEndpoint();
@@ -137,9 +123,11 @@ public class MastodonBaseApi {
             limit = Math.min(limit, quantity);
         }
         
+        String uri = endpoint + "/" + userId + "/" + complemento;
+        
         try {
             do {
-                MastodonAccountListResponse accountListResponse = this.getAccountPage(endpoint, complemento, okStatus, id, limit, max_id);
+                MastodonAccountListResponse accountListResponse = this.getAccountPage(uri, okStatus, limit, max_id);
                 if (accounts == null) {
                     accounts = accountListResponse.getAccounts();
                 } else {
