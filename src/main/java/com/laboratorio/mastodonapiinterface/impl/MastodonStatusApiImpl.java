@@ -40,7 +40,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             logException(e);
             throw e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
 
@@ -68,7 +68,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             logException(e);
             throw  e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -97,7 +97,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             logException(e);
             throw  e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -114,7 +114,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             logException(e);
             throw  e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -138,7 +138,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             logException(e);
             throw  e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -208,7 +208,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             logException(e);
             throw  e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
 

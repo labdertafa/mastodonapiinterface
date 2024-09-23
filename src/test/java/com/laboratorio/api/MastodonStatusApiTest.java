@@ -4,6 +4,7 @@ import com.laboratorio.mastodonapiinterface.MastodonStatusApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.impl.MastodonStatusApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
+import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
 import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
@@ -19,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 16/15/2024
+ * @updated 22/19/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -87,6 +88,15 @@ public class MastodonStatusApiTest {
         assertThrows(MastondonApiException.class, () -> {
             this.statusApi.deleteStatus(id);
         });
+    }
+    
+    @Test
+    public void uploadImage() throws Exception {
+        String imagen = "C:\\Users\\rafa\\Pictures\\Formula_1\\Spa_1950.jpg";
+        
+        MastodonMediaAttachment mediaAttachment = this.statusApi.uploadImage(imagen);
+        
+        assertTrue(!mediaAttachment.getUrl().isBlank());
     }
     
     @Test @Order(7)

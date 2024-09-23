@@ -42,7 +42,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             logException(e);
             throw e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -65,7 +65,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             logException(e);
             throw e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -149,7 +149,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             logException(e);
             throw  e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -173,7 +173,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             logException(e);
             throw  e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
     
@@ -198,7 +198,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             logException(e);
             throw e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
 
@@ -236,7 +236,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             logException(e);
             throw e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
 }

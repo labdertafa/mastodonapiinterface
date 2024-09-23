@@ -13,7 +13,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.2
  * @created 24/07/2024
- * @updated 15/09/2024
+ * @updated 16/09/2024
  */
 public class MastodonTrendingApiImpl extends MastodonBaseApi implements MastodonTrendingApi {
     public MastodonTrendingApiImpl(String accessToken) {
@@ -50,7 +50,7 @@ public class MastodonTrendingApiImpl extends MastodonBaseApi implements Mastodon
             logException(e);
             throw e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonTrendingApiImpl.class.getName(), e.getMessage());
         }
     }   
 }

@@ -15,7 +15,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.2
  * @created 25/07/2024
- * @updated 15/09/2024
+ * @updated 16/09/2024
  */
 public class MastodonNotificationApiImpl extends MastodonBaseApi implements MastodonNotificationApi {
     public MastodonNotificationApiImpl(String accessToken) {
@@ -67,7 +67,7 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
             logException(e);
             throw e;
         } catch (Exception e) {
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException(MastodonNotificationApiImpl.class.getName(), e.getMessage());
         }
     }
 
