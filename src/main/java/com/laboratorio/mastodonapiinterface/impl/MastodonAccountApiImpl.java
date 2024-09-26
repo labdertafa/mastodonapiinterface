@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * @author Rafael
  * @version 1.2
  * @created 10/07/2024
- * @updated 16/09/2024
+ * @updated 26/09/2024
  */
 public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonAccountApi {
     public MastodonAccountApiImpl(String accessToken) {
@@ -235,6 +235,26 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
+        } catch (Exception e) {
+            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean deleteSuggestion(String userId) {
+        String endpoint = this.apiConfig.getProperty("deleteSuggestion_endpoint");
+        int okStatus = Integer.parseInt(this.apiConfig.getProperty("deleteSuggestion_ok_status"));
+        
+        try {
+            String uri = endpoint + "/" + userId;
+            ApiRequest request = new ApiRequest(uri, okStatus);
+         
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
+            
+            this.client.executeDeleteRequest(request);
+            
+            return true;
         } catch (Exception e) {
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }

@@ -10,7 +10,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 16/09/2024
+ * @updated 26/09/2024
  */
 public interface MastodonAccountApi {
     // Obtiene la información de un usuario a partir de su ID
@@ -36,4 +36,6 @@ public interface MastodonAccountApi {
     // Consultar las sugerencias de seguimiento
     List<MastodonAccount> getSuggestions();
     List<MastodonAccount> getSuggestions(int limit);
+    
+    boolean deleteSuggestion(String userId);
 }

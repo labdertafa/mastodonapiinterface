@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 16/09/2024
+ * @updated 26/09/2024
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonAccountApiTest {
@@ -299,4 +299,14 @@ public class MastodonAccountApiTest {
         
         assertEquals(limit, accounts.size());
     }
+    
+/*    @Test
+    public void deleteSuggestion() {
+        int limit = 10;
+        
+        List<MastodonAccount> accounts = this.accountApi.getSuggestions(limit);
+        boolean result = this.accountApi.deleteSuggestion(accounts.get(0).getId());
+        
+        assertTrue(result);
+    } */
 }
