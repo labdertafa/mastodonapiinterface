@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 26/09/2024
+ * @updated 27/09/2024
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonAccountApiTest {
@@ -30,7 +30,8 @@ public class MastodonAccountApiTest {
     @BeforeEach
     private void initTest() {
         this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
-        this.accountApi = new MastodonAccountApiImpl(this.accessToken);
+        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        this.accountApi = new MastodonAccountApiImpl(urlBase, this.accessToken);
     }
     
     @Test

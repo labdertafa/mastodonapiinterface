@@ -16,11 +16,11 @@ import java.util.List;
  * @author Rafael
  * @version 1.2
  * @created 24/07/2024
- * @updated 16/09/2024
+ * @updated 27/09/2024
  */
 public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonStatusApi {
-    public MastodonStatusApiImpl(String accessToken) {
-        super(accessToken);
+    public MastodonStatusApiImpl(String urlBase, String accessToken) {
+        super(urlBase, accessToken);
     }
     
     @Override
@@ -29,7 +29,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getStatusById_ok_status"));
         
         try {
-            String uri = endpoint + "/" + id;
+            String uri = this.urlBase + endpoint + "/" + id;
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiHeader("Content-Type", "application/json");
             
@@ -55,7 +55,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("deleteStatus_ok_status"));
         
         try {
-            String uri = endpoint + "/" + id;
+            String uri = this.urlBase + endpoint + "/" + id;
             
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiHeader("Content-Type", "application/json");
@@ -78,7 +78,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("postStatus_ok_status"));
         
         try {
-            String uri = endpoint;
+            String uri = this.urlBase + endpoint;
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiPathParam("status", text);
             request.addApiPathParam("visibility", "public");
@@ -124,7 +124,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("UploadImage_ok_status"));
         
         try {
-            String uri = endpoint;
+            String uri = this.urlBase + endpoint;
             
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiHeader("Content-Type", "application/json");
@@ -217,7 +217,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         String endpoint = this.apiConfig.getProperty("reblogStatus_endpoint");
         String complementoUrl = this.apiConfig.getProperty("reblogStatus_complemento_url");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("reblogStatus_ok_status"));
-        String url = endpoint + "/" + id + "/" + complementoUrl;
+        String url = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
         return executeSimplePost(url, okStatus);
     }
 
@@ -226,7 +226,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         String endpoint = this.apiConfig.getProperty("unreblogStatus_endpoint");
         String complementoUrl = this.apiConfig.getProperty("unreblogStatus_complemento_url");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("unreblogStatus_ok_status"));
-        String url = endpoint + "/" + id + "/" + complementoUrl;
+        String url = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
         return executeSimplePost(url, okStatus);
     }
 
@@ -235,7 +235,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         String endpoint = this.apiConfig.getProperty("favouriteStatus_endpoint");
         String complementoUrl = this.apiConfig.getProperty("favouriteStatus_complemento_url");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("favouriteStatus_ok_status"));
-        String url = endpoint + "/" + id + "/" + complementoUrl;
+        String url = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
         return executeSimplePost(url, okStatus);
     }
 
@@ -244,7 +244,7 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         String endpoint = this.apiConfig.getProperty("unfavouriteStatus_endpoint");
         String complementoUrl = this.apiConfig.getProperty("unfavouriteStatus_complemento_url");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("unfavouriteStatus_ok_status"));
-        String url = endpoint + "/" + id + "/" + complementoUrl;
+        String url = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
         return executeSimplePost(url, okStatus);
     }   
 }

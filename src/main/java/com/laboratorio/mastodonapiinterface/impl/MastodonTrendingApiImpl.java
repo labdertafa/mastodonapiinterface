@@ -13,11 +13,11 @@ import java.util.List;
  * @author Rafael
  * @version 1.2
  * @created 24/07/2024
- * @updated 16/09/2024
+ * @updated 27/09/2024
  */
 public class MastodonTrendingApiImpl extends MastodonBaseApi implements MastodonTrendingApi {
-    public MastodonTrendingApiImpl(String accessToken) {
-        super(accessToken);
+    public MastodonTrendingApiImpl(String urlBase, String accessToken) {
+        super(urlBase, accessToken);
     }
     
     @Override
@@ -37,7 +37,7 @@ public class MastodonTrendingApiImpl extends MastodonBaseApi implements Mastodon
         }
         
         try {
-            String uri = endpoint;
+            String uri = this.urlBase + endpoint;
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiPathParam("limit", Integer.toString(usedLimit));
             

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 22/19/2024
+ * @updated 27/09/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -33,7 +33,8 @@ public class MastodonStatusApiTest {
     @BeforeEach
     private void initTests() {
         this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
-        this.statusApi = new MastodonStatusApiImpl(this.accessToken);
+        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        this.statusApi = new MastodonStatusApiImpl(urlBase, this.accessToken);
     }
     
     @Test

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 21/08/2024
+ * @updated 27/09/2024
  */
 public class MastodonTrendingApiTest {
     private String accessToken;
@@ -23,7 +23,8 @@ public class MastodonTrendingApiTest {
     @BeforeEach
     private void initTests() {
         this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
-        this.trendingApi = new MastodonTrendingApiImpl(this.accessToken);
+        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        this.trendingApi = new MastodonTrendingApiImpl(urlBase, this.accessToken);
     }
     
     @Test

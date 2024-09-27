@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 05/09/2024
+ * @updated 27/09/2024
  */
 public class MastodonNotificationApiTest {
     private String accessToken;
@@ -23,7 +23,8 @@ public class MastodonNotificationApiTest {
     @BeforeEach
     private void initNotificationApi() {
         this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
-        this.notificationApi = new MastodonNotificationApiImpl(this.accessToken);
+        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        this.notificationApi = new MastodonNotificationApiImpl(urlBase, this.accessToken);
     }
     
     @Test
@@ -67,7 +68,9 @@ public class MastodonNotificationApiTest {
     
     @Test
     public void getNotificationError() {
-        this.notificationApi = new MastodonNotificationApiImpl("INVALID_TOKEN");
+        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        
+        this.notificationApi = new MastodonNotificationApiImpl(urlBase, "INVALID_TOKEN");
 
         assertThrows(MastondonApiException.class, () -> {
             this.notificationApi.getAllNotifications();

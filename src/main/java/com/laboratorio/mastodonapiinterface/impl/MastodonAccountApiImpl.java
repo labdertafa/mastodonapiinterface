@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
  * @author Rafael
  * @version 1.2
  * @created 10/07/2024
- * @updated 26/09/2024
+ * @updated 27/09/2024
  */
 public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonAccountApi {
-    public MastodonAccountApiImpl(String accessToken) {
-        super(accessToken);
+    public MastodonAccountApiImpl(String urlBase, String accessToken) {
+        super(urlBase, accessToken);
     }
     
     @Override
@@ -31,7 +31,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getAccountById_ok_status"));
         
         try {
-            String url = endpoint + "/" + id;
+            String url = this.urlBase + endpoint + "/" + id;
             ApiRequest request = new ApiRequest(url, okStatus);
             request.addApiHeader("Content-Type", "application/json");
             
@@ -52,7 +52,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getAccountByUsername_ok_status"));
         
         try {
-            String url = endpoint;
+            String url = this.urlBase + endpoint;
             ApiRequest request = new ApiRequest(url, okStatus);
             request.addApiPathParam("acct", username);
             
@@ -136,7 +136,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("followAccount_ok_status"));
         
         try {
-            String uri = endpoint + "/" + id + "/" + complementoUrl;
+            String uri = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
@@ -160,7 +160,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("unfollowAccount_ok_status"));
         
         try {
-            String uri = endpoint + "/" + id + "/" + complementoUrl;
+            String uri = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
@@ -183,7 +183,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("checkrelationships_ok_status"));
         
         try {
-            String uri = endpoint;
+            String uri = this.urlBase + endpoint;
             ApiRequest request = new ApiRequest(uri, okStatus);
             for (String id : ids) {
                 request.addApiPathParam("id[]", id);
@@ -219,7 +219,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         }
         
         try {
-            String uri = endpoint;
+            String uri = this.urlBase + endpoint;
             ApiRequest request = new ApiRequest(uri, okStatus);
             request.addApiPathParam("limit", Integer.toString(usedLimit));
          
@@ -246,7 +246,7 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("deleteSuggestion_ok_status"));
         
         try {
-            String uri = endpoint + "/" + userId;
+            String uri = this.urlBase + endpoint + "/" + userId;
             ApiRequest request = new ApiRequest(uri, okStatus);
          
             request.addApiHeader("Content-Type", "application/json");

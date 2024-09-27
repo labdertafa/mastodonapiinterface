@@ -23,17 +23,19 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.2
  * @created 24/07/2024
- * @updated 15/09/2024
+ * @updated 27/09/2024
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
     protected final ApiClient client;
+    protected final String urlBase;
     protected final String accessToken;
     protected MastodonApiConfig apiConfig;
     protected final Gson gson;
 
-    public MastodonBaseApi(String accessToken) {
+    public MastodonBaseApi(String urlBase, String accessToken) {
         this.client = new ApiClientImpl();
+        this.urlBase = urlBase;
         this.accessToken = accessToken;
         this.apiConfig = MastodonApiConfig.getInstance();
         this.gson = new Gson();
@@ -123,7 +125,7 @@ public class MastodonBaseApi {
             limit = Math.min(limit, quantity);
         }
         
-        String uri = endpoint + "/" + userId + "/" + complemento;
+        String uri = this.urlBase + endpoint + "/" + userId + "/" + complemento;
         
         try {
             do {

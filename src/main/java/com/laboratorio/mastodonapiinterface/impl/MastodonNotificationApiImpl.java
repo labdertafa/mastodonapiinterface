@@ -15,11 +15,11 @@ import java.util.List;
  * @author Rafael
  * @version 1.2
  * @created 25/07/2024
- * @updated 16/09/2024
+ * @updated 27/09/2024
  */
 public class MastodonNotificationApiImpl extends MastodonBaseApi implements MastodonNotificationApi {
-    public MastodonNotificationApiImpl(String accessToken) {
-        super(accessToken);
+    public MastodonNotificationApiImpl(String urlBase, String accessToken) {
+        super(urlBase, accessToken);
     }
     
     @Override
@@ -92,9 +92,11 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
             usedLimit = Math.min(usedLimit, quantity);
         }
         
+        String uri = this.urlBase + endpoint;
+        
         try {
             do {
-                MastodonNotificationListResponse notificationListResponse = this.getNotificationPage(endpoint, usedLimit, okStatus, min_id);
+                MastodonNotificationListResponse notificationListResponse = this.getNotificationPage(uri, usedLimit, okStatus, min_id);
                 if (notifications == null) {
                     notifications = notificationListResponse.getNotifications();
                 } else {
