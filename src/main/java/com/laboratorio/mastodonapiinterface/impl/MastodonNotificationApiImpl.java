@@ -2,8 +2,9 @@ package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
-import com.laboratorio.clientapilibrary.model.ProcessedResponse;
+import com.laboratorio.clientapilibrary.model.ApiResponse;
 import com.laboratorio.mastodonapiinterface.MastodonNotificationApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonNotification;
@@ -13,9 +14,9 @@ import java.util.List;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 25/07/2024
- * @updated 27/09/2024
+ * @updated 04/10/2024
  */
 public class MastodonNotificationApiImpl extends MastodonBaseApi implements MastodonNotificationApi {
     public MastodonNotificationApiImpl(String urlBase, String accessToken) {
@@ -40,25 +41,27 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
     // Función que devuelve una página de notificaciones de una cuenta
     private MastodonNotificationListResponse getNotificationPage(String uri, int limit, int okStatus, String posicionInicial) throws Exception {
         try {
-            ApiRequest request = new ApiRequest(uri, okStatus);
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
             request.addApiPathParam("limit", Integer.toString(limit));
             request.addApiPathParam("min_id", posicionInicial);
             
-            request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            ProcessedResponse response = this.client.getProcessedResponseGetRequest(request);
+            ApiResponse response = this.client.executeApiRequest(request);
             
             String minId = posicionInicial;
-            List<MastodonNotification> notifications = this.gson.fromJson(response.getResponseDetail(), new TypeToken<List<MastodonNotification>>(){}.getType());
+            List<MastodonNotification> notifications = this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonNotification>>(){}.getType());
             if (!notifications.isEmpty()) {
                 log.debug("Se ejecutó la query: " + uri);
                 log.debug("Resultados encontrados: " + notifications.size());
 
-                String linkHeader = response.getResponse().getHeaderString("link");
-                log.debug("Recibí este link: " + linkHeader);
-                minId = this.extractMinId(linkHeader);
-                log.debug("Valor del min_id: " + minId);
+                List<String> linkHeaderList = response.getHttpHeaders().get("link");
+                if ((linkHeaderList != null) && (!linkHeaderList.isEmpty())) {
+                    String linkHeader = linkHeaderList.get(0);
+                    log.debug("Recibí este link: " + linkHeader);
+                    minId = this.extractMinId(linkHeader);
+                    log.debug("Valor del min_id: " + minId);
+                }
             }
 
             // return accounts;

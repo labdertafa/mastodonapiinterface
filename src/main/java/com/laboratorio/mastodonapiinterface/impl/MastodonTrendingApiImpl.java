@@ -2,7 +2,9 @@ package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
+import com.laboratorio.clientapilibrary.model.ApiResponse;
 import com.laboratorio.mastodonapiinterface.MastodonTrendingApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonTag;
@@ -11,9 +13,9 @@ import java.util.List;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 24/07/2024
- * @updated 27/09/2024
+ * @updated 04/10/2024
  */
 public class MastodonTrendingApiImpl extends MastodonBaseApi implements MastodonTrendingApi {
     public MastodonTrendingApiImpl(String urlBase, String accessToken) {
@@ -38,14 +40,12 @@ public class MastodonTrendingApiImpl extends MastodonBaseApi implements Mastodon
         
         try {
             String uri = this.urlBase + endpoint;
-            ApiRequest request = new ApiRequest(uri, okStatus);
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
             request.addApiPathParam("limit", Integer.toString(usedLimit));
             
-            request.addApiHeader("Content-Type", "application/json");
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            String jsonStr = this.client.executeGetRequest(request);
-            
-            return this.gson.fromJson(jsonStr, new TypeToken<List<MastodonTag>>(){}.getType());
+            return this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonTag>>(){}.getType());
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;

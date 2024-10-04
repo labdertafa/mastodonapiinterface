@@ -2,7 +2,9 @@ package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
+import com.laboratorio.clientapilibrary.model.ApiResponse;
 import com.laboratorio.mastodonapiinterface.MastodonAccountApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
@@ -16,9 +18,9 @@ import java.util.stream.Collectors;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 10/07/2024
- * @updated 27/09/2024
+ * @updated 04/10/2024
  */
 public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonAccountApi {
     public MastodonAccountApiImpl(String urlBase, String accessToken) {
@@ -32,12 +34,11 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         
         try {
             String url = this.urlBase + endpoint + "/" + id;
-            ApiRequest request = new ApiRequest(url, okStatus);
-            request.addApiHeader("Content-Type", "application/json");
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
             
-            String jsonStr = this.client.executeGetRequest(request);
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            return this.gson.fromJson(jsonStr, MastodonAccount.class);
+            return this.gson.fromJson(response.getResponseStr(), MastodonAccount.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
@@ -53,14 +54,12 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         
         try {
             String url = this.urlBase + endpoint;
-            ApiRequest request = new ApiRequest(url, okStatus);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
             request.addApiPathParam("acct", username);
             
-            request.addApiHeader("Content-Type", "application/json");
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            String jsonStr = this.client.executeGetRequest(request);
-            
-            return this.gson.fromJson(jsonStr, MastodonAccount.class);
+            return this.gson.fromJson(response.getResponseStr(), MastodonAccount.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
@@ -137,12 +136,12 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         
         try {
             String uri = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
-            ApiRequest request = new ApiRequest(uri, okStatus);
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.POST);
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = this.client.executePostRequest(request);
-            MastodonRelationship relationship = this.gson.fromJson(jsonStr, MastodonRelationship.class);
+            ApiResponse response = this.client.executeApiRequest(request);
+            MastodonRelationship relationship = this.gson.fromJson(response.getResponseStr(), MastodonRelationship.class);
             
             return relationship.isFollowing();
         } catch (JsonSyntaxException e) {
@@ -161,12 +160,12 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         
         try {
             String uri = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
-            ApiRequest request = new ApiRequest(uri, okStatus);
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.POST);
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = this.client.executePostRequest(request);
-            MastodonRelationship relationship = this.gson.fromJson(jsonStr, MastodonRelationship.class);
+            ApiResponse response = this.client.executeApiRequest(request);
+            MastodonRelationship relationship = this.gson.fromJson(response.getResponseStr(), MastodonRelationship.class);
             
             return !relationship.isFollowing();
         } catch (JsonSyntaxException e) {
@@ -184,16 +183,16 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         
         try {
             String uri = this.urlBase + endpoint;
-            ApiRequest request = new ApiRequest(uri, okStatus);
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
             for (String id : ids) {
                 request.addApiPathParam("id[]", id);
             }
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = this.client.executeGetRequest(request);
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            return this.gson.fromJson(jsonStr, new TypeToken<List<MastodonRelationship>>(){}.getType());
+            return this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonRelationship>>(){}.getType());
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
@@ -220,14 +219,13 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         
         try {
             String uri = this.urlBase + endpoint;
-            ApiRequest request = new ApiRequest(uri, okStatus);
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
             request.addApiPathParam("limit", Integer.toString(usedLimit));
          
-            request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            String jsonStr = this.client.executeGetRequest(request);
-            List<MastodonSuggestion> suggestions = this.gson.fromJson(jsonStr, new TypeToken<List<MastodonSuggestion>>(){}.getType());
+            ApiResponse response = this.client.executeApiRequest(request);
+            List<MastodonSuggestion> suggestions = this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonSuggestion>>(){}.getType());
             
             return suggestions.stream()
                     .map(s -> s.getAccount())
@@ -247,12 +245,11 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         
         try {
             String uri = this.urlBase + endpoint + "/" + userId;
-            ApiRequest request = new ApiRequest(uri, okStatus);
-         
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.DELETE);
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            this.client.executeDeleteRequest(request);
+            this.client.executeApiRequest(request);
             
             return true;
         } catch (Exception e) {

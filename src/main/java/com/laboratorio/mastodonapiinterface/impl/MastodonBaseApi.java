@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.laboratorio.clientapilibrary.ApiClient;
-import com.laboratorio.clientapilibrary.impl.ApiClientImpl;
+import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
-import com.laboratorio.clientapilibrary.model.ProcessedResponse;
+import com.laboratorio.clientapilibrary.model.ApiResponse;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
@@ -21,9 +21,9 @@ import org.apache.logging.log4j.Logger;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 24/07/2024
- * @updated 27/09/2024
+ * @updated 04/10/2024
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
@@ -34,7 +34,7 @@ public class MastodonBaseApi {
     protected final Gson gson;
 
     public MastodonBaseApi(String urlBase, String accessToken) {
-        this.client = new ApiClientImpl();
+        this.client = new ApiClient();
         this.urlBase = urlBase;
         this.accessToken = accessToken;
         this.apiConfig = MastodonApiConfig.getInstance();
@@ -79,7 +79,7 @@ public class MastodonBaseApi {
     // Función que devuelve una página de seguidores o seguidos de una cuenta
     private MastodonAccountListResponse getAccountPage(String uri, int okStatus, int limit, String posicionInicial) throws Exception {
         try {
-            ApiRequest request = new ApiRequest(uri, okStatus);
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
             request.addApiPathParam("limit", Integer.toString(limit));
             if (posicionInicial != null) {
                 request.addApiPathParam("max_id", posicionInicial);
@@ -88,18 +88,21 @@ public class MastodonBaseApi {
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            ProcessedResponse response = this.client.getProcessedResponseGetRequest(request);
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            List<MastodonAccount> accounts = this.gson.fromJson(response.getResponseDetail(), new TypeToken<List<MastodonAccount>>(){}.getType());
+            List<MastodonAccount> accounts = this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonAccount>>(){}.getType());
             String maxId = null;
             if (!accounts.isEmpty()) {
                 log.debug("Se ejecutó la query: " + uri);
                 log.debug("Resultados encontrados: " + accounts.size());
 
-                String linkHeader = response.getResponse().getHeaderString("link");
-                log.debug("Recibí este link: " + linkHeader);
-                maxId = this.extractMaxId(linkHeader);
-                log.debug("Valor del max_id: " + maxId);
+                List<String> linkHeaderList = response.getHttpHeaders().get("link");
+                if ((linkHeaderList != null) && (!linkHeaderList.isEmpty())) {
+                    String linkHeader = linkHeaderList.get(0);
+                    log.debug("Recibí este link: " + linkHeader);
+                    maxId = this.extractMaxId(linkHeader);
+                    log.debug("Valor del max_id: " + maxId);
+                }
             }
 
             // return accounts;
