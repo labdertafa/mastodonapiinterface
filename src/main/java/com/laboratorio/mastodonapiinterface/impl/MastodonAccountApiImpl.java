@@ -2,6 +2,7 @@ package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -39,10 +40,13 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), MastodonAccount.class);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -60,10 +64,13 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), MastodonAccount.class);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -144,10 +151,13 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             MastodonRelationship relationship = this.gson.fromJson(response.getResponseStr(), MastodonRelationship.class);
             
             return relationship.isFollowing();
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -168,10 +178,13 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             MastodonRelationship relationship = this.gson.fromJson(response.getResponseStr(), MastodonRelationship.class);
             
             return !relationship.isFollowing();
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -193,10 +206,13 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonRelationship>>(){}.getType());
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -230,10 +246,13 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             return suggestions.stream()
                     .map(s -> s.getAccount())
                     .collect(Collectors.toList());
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -252,7 +271,10 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             this.client.executeApiRequest(request);
             
             return true;
+        } catch (ApiClientException e) {
+            throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
         }
     }

@@ -1,7 +1,7 @@
 package com.laboratorio.api;
 
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.mastodonapiinterface.MastodonAccountApi;
-import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.impl.MastodonAccountApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonRelationship;
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 27/09/2024
+ * @updated 06/10/2024
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonAccountApiTest {
@@ -48,7 +48,7 @@ public class MastodonAccountApiTest {
     public void findAccountByInvalidId() {
         String id = "1125349753AAABBB60";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getAccountById(id);
         });
     }
@@ -67,7 +67,7 @@ public class MastodonAccountApiTest {
     public void findAccountByInvalidAcct() {
         String acct = "@ZZZWWWWPPPSSSDDGGGFF";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getAccountByUsername(acct);
         });
     }
@@ -145,7 +145,7 @@ public class MastodonAccountApiTest {
     public void getFollowersInvalidId() {
         String id = "1125349753AAABBB60";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getFollowers(id);
         });
     }
@@ -225,7 +225,7 @@ public class MastodonAccountApiTest {
     public void getFollowingsInvalidId() {
         String id = "1125349753AAABBB60";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getFollowings(id);
         });
     }
@@ -243,7 +243,7 @@ public class MastodonAccountApiTest {
     public void followInvalidAccount() {
         String id = "1125349753AAABBB60";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.followAccount(id);
         });
     }
@@ -261,7 +261,7 @@ public class MastodonAccountApiTest {
     public void unfollowInvalidAccount() {
         String id = "1125349753AAABBB60";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.unfollowAccount(id);
         });
     }

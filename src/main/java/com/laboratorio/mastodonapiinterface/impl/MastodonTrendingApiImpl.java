@@ -2,6 +2,7 @@ package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -46,10 +47,13 @@ public class MastodonTrendingApiImpl extends MastodonBaseApi implements Mastodon
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonTag>>(){}.getType());
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonTrendingApiImpl.class.getName(), e.getMessage());
         }
     }   

@@ -2,6 +2,7 @@ package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -66,10 +67,13 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
 
             // return accounts;
             return new MastodonNotificationListResponse(minId, notifications);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonNotificationApiImpl.class.getName(), e.getMessage());
         }
     }

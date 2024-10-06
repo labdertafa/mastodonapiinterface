@@ -1,5 +1,6 @@
 package com.laboratorio.api;
 
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.mastodonapiinterface.MastodonStatusApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.impl.MastodonStatusApiImpl;
@@ -20,7 +21,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 24/07/2024
- * @updated 27/09/2024
+ * @updated 06/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -51,7 +52,7 @@ public class MastodonStatusApiTest {
     public void getStatusByInvalidId() {
         String id = "1125AXR11TRE9WQW63";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.getStatusById(id);
         });
     }
@@ -86,7 +87,7 @@ public class MastodonStatusApiTest {
     public void deleteInvalidStatus() {
         String id = "1125AXR11TRE9WQW63";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.deleteStatus(id);
         });
     }
@@ -149,7 +150,7 @@ public class MastodonStatusApiTest {
     public void getInvalidRebloggedBy() {
         String id = "QQQ109412553445428617";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.getRebloggedBy(id);
         });
     }
@@ -183,7 +184,7 @@ public class MastodonStatusApiTest {
     public void getInvalidFavouritedBy() {
         String id = "QQQ109412553445428617";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.getFavouritedBy(id);
         });
     }
@@ -202,7 +203,7 @@ public class MastodonStatusApiTest {
     public void reblogInvalidStatus() {
         String id = "QQ112836040801154212";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.reblogStatus(id);
         });
     }
@@ -220,7 +221,7 @@ public class MastodonStatusApiTest {
     public void unreblogInvalidStatus() {
         String id = "QQ112836040801154212";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.unreblogStatus(id);
         });
     }
@@ -239,7 +240,7 @@ public class MastodonStatusApiTest {
     public void favouriteInvalidStatus() {
         String id = "QQ112836040801154212";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.favouriteStatus(id);
         });
     }
@@ -257,7 +258,7 @@ public class MastodonStatusApiTest {
     public void unfavouriteInvalidStatus() {
         String id = "QQ112836040801154212";
         
-        assertThrows(MastondonApiException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.unfavouriteStatus(id);
         });
     }

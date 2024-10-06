@@ -1,6 +1,7 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -11,7 +12,6 @@ import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
 import com.laboratorio.mastodonapiinterface.utils.InstruccionInfo;
-import java.io.File;
 import java.util.List;
 
 /**
@@ -38,10 +38,13 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -58,7 +61,6 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         
         try {
             String uri = this.urlBase + endpoint + "/" + id;
-            
             ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.DELETE);
             request.addApiHeader("Content-Type", "application/json");
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
@@ -66,10 +68,13 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -95,10 +100,13 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -112,9 +120,6 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             }
             
             return this.postStatusWithImage(text, null);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
             throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
@@ -135,10 +140,13 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), MastodonMediaAttachment.class);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
@@ -205,10 +213,13 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             ApiResponse response = this.client.executeApiRequest(request);
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
+        } catch (ApiClientException e) {
+            throw e;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
         } catch (Exception e) {
+            logException(e);
             throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
         }
     }
