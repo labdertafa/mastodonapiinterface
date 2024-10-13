@@ -8,9 +8,9 @@ import java.util.List;
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 24/07/2024
- * @updated 16/09/2024
+ * @updated 13/10/2024
  */
 public interface MastodonStatusApi {
     // Consultar un status por su id
@@ -40,4 +40,6 @@ public interface MastodonStatusApi {
     // Marcar y desmarcar un status como favorito
     MastodonStatus favouriteStatus(String id);
     MastodonStatus unfavouriteStatus(String id);
+    
+    List<MastodonStatus> getGlobalTimeline(int quantity);
 }

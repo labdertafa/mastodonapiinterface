@@ -1,6 +1,7 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
@@ -11,15 +12,18 @@ import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
+import com.laboratorio.mastodonapiinterface.model.response.MastondonStatusListResponse;
 import com.laboratorio.mastodonapiinterface.utils.InstruccionInfo;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
  * @author Rafael
- * @version 1.3
+ * @version 1.4
  * @created 24/07/2024
- * @updated 04/10/2024
+ * @updated 13/10/2024
  */
 public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonStatusApi {
     public MastodonStatusApiImpl(String urlBase, String accessToken) {
@@ -258,5 +262,98 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("unfavouriteStatus_ok_status"));
         String url = this.urlBase + endpoint + "/" + id + "/" + complementoUrl;
         return executeSimplePost(url, okStatus);
-    }   
+    }
+    
+    private String getNextPageLink(String input) {
+        // Expresión regular para buscar la URL de "rel=next"
+        String regex = "<([^>]+)>;\\s*rel=\"next\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        
+        return null;
+    }
+    
+    private MastondonStatusListResponse getTimelinePage(String uri, int okStatus, int limit, String nextPage) {
+        try {
+            ApiRequest request;
+            if (nextPage == null) {
+                request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
+            } else {
+                request = new ApiRequest(nextPage, okStatus, ApiMethodType.GET);
+            }
+            request.addApiPathParam("limit", Integer.toString(limit));
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
+            
+            ApiResponse response = this.client.executeApiRequest(request);
+            
+            List<MastodonStatus> statuses = this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonStatus>>(){}.getType());
+            String newNextPage = null;
+            if (!statuses.isEmpty()) {
+                log.debug("Se ejecutó la query: " + uri);
+                log.debug("Resultados encontrados: " + statuses.size());
+
+                List<String> linkHeaderList = response.getHttpHeaders().get("link");
+                if ((linkHeaderList != null) && (!linkHeaderList.isEmpty())) {
+                    String linkHeader = linkHeaderList.get(0);
+                    log.debug("Recibí este link: " + linkHeader);
+                    newNextPage = this.getNextPageLink(linkHeader);
+                    log.debug("Valor del newNextPage: " + newNextPage);
+                }
+            }
+
+            return new MastondonStatusListResponse(statuses, newNextPage);
+        } catch (ApiClientException e) {
+            throw e;
+        } catch (JsonSyntaxException e) {
+            logException(e);
+            throw  e;
+        } catch (Exception e) {
+            logException(e);
+            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+        }
+    }
+
+    @Override
+    public List<MastodonStatus> getGlobalTimeline(int quantity) {
+        String endpoint = this.apiConfig.getProperty("getGlobalTimeLine_endpoint");
+        int defaultLimit = Integer.parseInt(this.apiConfig.getProperty("getGlobalTimeLine_default_limit"));
+        int okStatus = Integer.parseInt(this.apiConfig.getProperty("getGlobalTimeLine_ok_status"));
+        
+        List<MastodonStatus> statuses = null;
+        boolean continuar = true;
+        String nextPage = null;
+        
+        try {
+            String uri = this.urlBase + endpoint;
+            
+            do {
+                MastondonStatusListResponse statusListResponse = this.getTimelinePage(uri, okStatus, defaultLimit, nextPage);
+                log.debug("Elementos recuperados total: " + statusListResponse.getStatuses().size());
+                if (statuses == null) {
+                    statuses = statusListResponse.getStatuses();
+                } else {
+                    statuses.addAll(statusListResponse.getStatuses());
+                }
+                
+                nextPage = statusListResponse.getNextPage();
+                log.debug("getGlobalTimeline. Recuperados: " + statuses.size() + ". Next page: " + nextPage);
+                if (statusListResponse.getStatuses().isEmpty()) {
+                    continuar = false;
+                } else {
+                    if ((nextPage == null) || (statuses.size() >= quantity)) {
+                        continuar = false;
+                    }
+                }
+            } while (continuar);
+            
+            return statuses.subList(0, Math.min(quantity, statuses.size()));
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }

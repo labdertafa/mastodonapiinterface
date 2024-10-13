@@ -8,9 +8,9 @@ import lombok.Setter;
 /**
  *
  * @author Rafael
- * @version 1.0
+ * @version 1.1
  * @created 24/07/2024
- * @updated 25/07/2024
+ * @updated 13/10/2024
  */
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -35,8 +35,6 @@ public class MastodonStatus {
     private String in_reply_to_id;
     private String in_reply_to_account_id;
     private MastodonReblog reblog;
-    // private Poll poll;
-    // private PreviewCard card;
     private String language;
     private String text;
     private String edited_at;
@@ -46,4 +44,9 @@ public class MastodonStatus {
     private boolean bookmarked;
     private boolean pinned;
     private MastodonFilterResult[] filtered;
+
+    @Override
+    public String toString() {
+        return "MastodonStatus{" + "id=" + id + ", created_at=" + created_at + ", content=" + content + ", reblogs_count=" + reblogs_count + ", favourites_count=" + favourites_count + ", replies_count=" + replies_count + ", language=" + language + '}';
+    }
 }

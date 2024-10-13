@@ -9,6 +9,8 @@ import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
 import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -19,13 +21,14 @@ import org.junit.jupiter.api.TestMethodOrder;
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 24/07/2024
- * @updated 06/10/2024
+ * @updated 13/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonStatusApiTest {
+    protected static final Logger log = LogManager.getLogger(MastodonStatusApiTest.class);
     private String accessToken;
     private MastodonStatusApi statusApi;
     private static String idElim = "";
@@ -261,5 +264,19 @@ public class MastodonStatusApiTest {
         assertThrows(ApiClientException.class, () -> {
             this.statusApi.unfavouriteStatus(id);
         });
+    }
+    
+    @Test
+    public void getGlobalTimeline() {
+        int quantity = 50;
+        
+        List<MastodonStatus> statuses = statusApi.getGlobalTimeline(quantity);
+        int i = 0;
+        for (MastodonStatus status : statuses) {
+            i++;
+            log.info(i + "-) Status: " + status.toString());
+        }
+        
+        assertEquals(quantity, statuses.size());
     }
 }
