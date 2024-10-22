@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 /**
  *
  * @author Rafael
- * @version 1.3
+ * @version 1.4
  * @created 10/07/2024
- * @updated 04/10/2024
+ * @updated 22/10/2024
  */
 public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonAccountApi {
     public MastodonAccountApiImpl(String urlBase, String accessToken) {
@@ -106,6 +106,14 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
     }
     
     @Override
+    public List<String> getFollowersIds(String userId) throws Exception {
+        MastodonAccountListResponse response = this.getFollowers(userId);
+        return response.getAccounts().stream()
+                .map(account -> account.getId())
+                .collect(Collectors.toList());
+    }
+    
+    @Override
     public MastodonAccountListResponse getFollowings(String id) throws Exception {
         return this.getFollowings(id, 0);
     }
@@ -133,6 +141,14 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
         }
         InstruccionInfo instruccionInfo = new InstruccionInfo(endpoint, complementoUrl, okStatus, usedLimit);
         return this.getMastodonAccountList(instruccionInfo, id, quantity, posicionInicial);
+    }
+    
+    @Override
+    public List<String> getFollowingsIds(String userId) throws Exception {
+        MastodonAccountListResponse response = this.getFollowings(userId);
+        return response.getAccounts().stream()
+                .map(account -> account.getId())
+                .collect(Collectors.toList());
     }
     
     @Override
