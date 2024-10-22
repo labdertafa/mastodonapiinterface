@@ -107,11 +107,16 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
     
     @Override
     public List<String> getFollowersIds(String userId) throws Exception {
-        MastodonAccountListResponse response = this.getFollowers(userId);
+        return this.getFollowersIds(userId, 0);
+    }
+    @Override
+    public List<String> getFollowersIds(String userId, int limit) throws Exception {
+        MastodonAccountListResponse response = this.getFollowers(userId, limit);
         return response.getAccounts().stream()
                 .map(account -> account.getId())
                 .collect(Collectors.toList());
     }
+    
     
     @Override
     public MastodonAccountListResponse getFollowings(String id) throws Exception {
@@ -145,7 +150,12 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
     
     @Override
     public List<String> getFollowingsIds(String userId) throws Exception {
-        MastodonAccountListResponse response = this.getFollowings(userId);
+        return this.getFollowingsIds(userId, 0);
+    }
+    
+    @Override
+    public List<String> getFollowingsIds(String userId, int limit) throws Exception {
+        MastodonAccountListResponse response = this.getFollowings(userId, limit);
         return response.getAccounts().stream()
                 .map(account -> account.getId())
                 .collect(Collectors.toList());

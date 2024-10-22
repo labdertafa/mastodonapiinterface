@@ -24,6 +24,7 @@ public interface MastodonAccountApi {
     MastodonAccountListResponse getFollowers(String id, int limit, int quantity, String posicionInicial) throws Exception;
     // Obtener los identificadores de los seguidores
     List<String> getFollowersIds(String userId) throws Exception;
+    List<String> getFollowersIds(String userId, int limit) throws Exception;
     // Obtiene los seguidos de un usuario a partir de su id. Quantity indica el número de registros a recuperar (cero significa todos). Se puede indicar una posición inicial.
     MastodonAccountListResponse getFollowings(String id) throws Exception;
     MastodonAccountListResponse getFollowings(String id, int limit) throws Exception;
@@ -31,6 +32,7 @@ public interface MastodonAccountApi {
     MastodonAccountListResponse getFollowings(String id, int limit, int quantity, String posicionInicial) throws Exception;
     // Obtener los identificadores de los seguidos
     List<String> getFollowingsIds(String userId) throws Exception;
+    List<String> getFollowingsIds(String userId, int limit) throws Exception;
     // Seguir a un usuario
     boolean followAccount(String id);
     // Dejar de seguir a un usuario
