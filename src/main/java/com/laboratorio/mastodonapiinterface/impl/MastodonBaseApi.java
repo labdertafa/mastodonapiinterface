@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.3
  * @created 24/07/2024
- * @updated 04/10/2024
+ * @updated 18/04/2025
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
@@ -97,10 +97,10 @@ public class MastodonBaseApi {
                 log.debug("Se ejecutó la query: " + uri);
                 log.debug("Resultados encontrados: " + accounts.size());
 
-                List<String> linkHeaderList = response.getHttpHeaders().get("link");
+                List<String> linkHeaderList = response.getHttpHeaders().get("Link");
                 if ((linkHeaderList != null) && (!linkHeaderList.isEmpty())) {
                     String linkHeader = linkHeaderList.get(0);
-                    log.debug("Recibí este link: " + linkHeader);
+                    log.debug("Recibí este Link: " + linkHeader);
                     maxId = this.extractMaxId(linkHeader);
                     log.debug("Valor del max_id: " + maxId);
                 }

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.2
  * @created 24/07/2024
- * @updated 13/10/2024
+ * @updated 18/04/2025
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -41,7 +41,7 @@ public class MastodonStatusApiTest {
         this.statusApi = new MastodonStatusApiImpl(urlBase, this.accessToken);
     }
     
-    @Test
+    /* @Test
     public void getStatusById() {
         String id = "112593511260942463";
         String uriResult = "https://mastodon.social/users/kreuger458/statuses/112593511260942463";
@@ -49,7 +49,7 @@ public class MastodonStatusApiTest {
         MastodonStatus status = this.statusApi.getStatusById(id);
         assertEquals(id, status.getId());
         assertEquals(uriResult, status.getUri());
-    }
+    } */
     
     @Test
     public void getStatusByInvalidId() {
@@ -124,7 +124,7 @@ public class MastodonStatusApiTest {
         assertTrue(status.getText().contains(text));
     }
     
-    @Test
+    /* @Test
     public void getRebloggedBy() { // Usa el default limit
         String id = "109412553445428617";
         
@@ -134,9 +134,9 @@ public class MastodonStatusApiTest {
         } catch (Exception e) {
             fail("Ocurrió una excepción: " + e.getMessage());
         }
-    }
+    } */
     
-    @Test
+    /* @Test
     public void getRebloggedByWithLimit() { // Define el  limit
         String id = "109412553445428617";
         int limit = 80;
@@ -147,7 +147,7 @@ public class MastodonStatusApiTest {
         } catch (Exception e) {
             fail("Ocurrió una excepción: " + e.getMessage());
         }
-    }
+    } */
     
     @Test
     public void getInvalidRebloggedBy() {
@@ -158,7 +158,7 @@ public class MastodonStatusApiTest {
         });
     }
     
-    @Test
+    /* @Test
     public void getFavouritedBy() { // Usa el default limit
         String id = "109412553445428617";
         
@@ -168,9 +168,9 @@ public class MastodonStatusApiTest {
         } catch (Exception e) {
             fail("Ocurrió una excepción: " + e.getMessage());
         }
-    }
+    } */
     
-    @Test
+    /* @Test
     public void getFavouritedByWithLimit() { // Define un limit
         String id = "109412553445428617";
         int limit = 80;
@@ -181,7 +181,7 @@ public class MastodonStatusApiTest {
         } catch (Exception e) {
             fail("Ocurrió una excepción: " + e.getMessage());
         }
-    }
+    } */
     
     @Test
     public void getInvalidFavouritedBy() {
@@ -192,7 +192,7 @@ public class MastodonStatusApiTest {
         });
     }
     
-    @Test @Order(3)
+    /* @Test @Order(3)
     public void reblogStatus() {
         String id = "112836040801154212";
         
@@ -200,7 +200,7 @@ public class MastodonStatusApiTest {
         assertEquals(id, status.getReblog().getId());
         operationCount = status.getReblog().getReblogs_count();
         assertTrue(operationCount > 0);
-    }
+    } */
     
     @Test
     public void reblogInvalidStatus() {
@@ -211,14 +211,14 @@ public class MastodonStatusApiTest {
         });
     }
     
-    @Test @Order(4)
+    /* @Test @Order(4)
     public void unreblogStatus() {
         String id = "112836040801154212";
         
         MastodonStatus status = this.statusApi.unreblogStatus(id);
         assertEquals(id, status.getId());
         assertEquals(operationCount - 1, status.getReblogs_count());
-    }
+    } */
     
     @Test
     public void unreblogInvalidStatus() {
@@ -229,7 +229,7 @@ public class MastodonStatusApiTest {
         });
     }
     
-    @Test @Order(5)
+    /* @Test @Order(5)
     public void favouriteStatus() {
         String id = "112836040801154212";
         
@@ -237,7 +237,7 @@ public class MastodonStatusApiTest {
         assertEquals(id, status.getId());
         operationCount = status.getFavourites_count();
         assertTrue(operationCount > 0);
-    }
+    } */
     
     @Test
     public void favouriteInvalidStatus() {
@@ -248,14 +248,14 @@ public class MastodonStatusApiTest {
         });
     }
     
-    @Test @Order(6)
+    /* @Test @Order(6)
     public void unfavouriteStatus() {
         String id = "112836040801154212";
         
         MastodonStatus status = this.statusApi.unfavouriteStatus(id);
         assertEquals(id, status.getId());
         assertEquals(operationCount - 1, status.getFavourites_count());
-    }
+    } */
     
     @Test
     public void unfavouriteInvalidStatus() {

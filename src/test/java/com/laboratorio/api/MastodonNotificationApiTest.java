@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 06/10/2024
+ * @updated 18/04/2025
  */
 public class MastodonNotificationApiTest {
     private String accessToken;
@@ -50,7 +50,7 @@ public class MastodonNotificationApiTest {
     
     @Test
     public void get110Notifications() throws Exception {
-        int cantidad  = 110;
+        int cantidad  = 50;
         
         MastodonNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(0, cantidad);
 

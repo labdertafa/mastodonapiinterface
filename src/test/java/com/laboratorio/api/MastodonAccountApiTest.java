@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 06/10/2024
+ * @updated 18/04/2025
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonAccountApiTest {
@@ -36,7 +36,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void findAccountById() {
-        String id = "109330704582548664";
+        String id = "109331490794268038";
         String resultado = "rober@masto.es";
         
         MastodonAccount account = this.accountApi.getAccountById(id);
@@ -55,8 +55,8 @@ public class MastodonAccountApiTest {
     
     @Test
     public void findAccountByAcct() {
-        String acct = "karamrafeek";
-        String resultado = "112534975322873660";
+        String acct = "rober@masto.es";
+        String resultado = "109331490794268038";
         
         MastodonAccount account = this.accountApi.getAccountByUsername(acct);
         assertEquals(acct, account.getAcct());
@@ -74,7 +74,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get40Followers() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 40;
         
@@ -86,7 +86,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get40FollowersDefaultLimit() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int defaultLimit = 0;
         int cantidad = 40;
         
@@ -98,7 +98,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get80Followers() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 80;
         
@@ -110,7 +110,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get81Followers() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 81;
         
@@ -122,7 +122,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get200Followers() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 200;
         
@@ -134,7 +134,7 @@ public class MastodonAccountApiTest {
 
     @Test
     public void getAllFollowers() throws Exception {     // Usa default limit
-        String id = "112534975322873660";
+        String id = "109285474114426957";
         
         MastodonAccountListResponse accountListResponse = this.accountApi.getFollowers(id);
         assertTrue(accountListResponse.getMaxId() == null);
@@ -152,7 +152,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get40Followings() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 40;
         
@@ -164,7 +164,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get40FollowingsDefaultLimit() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int defaulLimit = 0;
         int cantidad = 40;
         
@@ -176,7 +176,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get80Followings() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 80;
         
@@ -188,7 +188,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get81Followings() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 81;
         
@@ -200,7 +200,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void get200Followings() throws Exception {
-        String id = "109330704582548664";
+        String id = "109285474114426957";
         int maxLimit = 80;
         int cantidad = 200;
         
@@ -212,7 +212,7 @@ public class MastodonAccountApiTest {
 
     @Test
     public void getAllFollowings() throws Exception { // Usa default limit
-        String id = "111642211720374067";
+        String id = "109285474114426957";
         // String id = "112727255328679336";   // Siguiendo 0 cuentas
         
         MastodonAccountListResponse accountListResponse = this.accountApi.getFollowings(id);
@@ -232,7 +232,7 @@ public class MastodonAccountApiTest {
     
     @Test @Order(1)
     public void followAccount() {
-        String id = "111642211720374067";
+        String id = "113451993690948867";
         
         boolean result = this.accountApi.followAccount(id);
         
@@ -250,7 +250,7 @@ public class MastodonAccountApiTest {
     
     @Test @Order(2)
     public void unfollowAccount() {
-        String id = "111642211720374067";
+        String id = "109333584977490945";
         
         boolean result = this.accountApi.unfollowAccount(id);
         
@@ -268,7 +268,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void checkRelationships() {
-        List<String> ids = List.of("1", "2");
+        List<String> ids = List.of("109285474114426957", "113253912705605249");
         
         List<MastodonRelationship> list = this.accountApi.checkrelationships(ids);
         assertTrue(list.size() == 2);
@@ -276,7 +276,7 @@ public class MastodonAccountApiTest {
     
     @Test
     public void checkMutualRelationship() {
-        List<String> ids = List.of("109330704582548664");
+        List<String> ids = List.of("113253912705605249");
         
         List<MastodonRelationship> list = this.accountApi.checkrelationships(ids);
         assertTrue(list.get(0).isFollowing());

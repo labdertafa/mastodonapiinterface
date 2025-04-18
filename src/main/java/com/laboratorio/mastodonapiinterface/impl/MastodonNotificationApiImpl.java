@@ -17,7 +17,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.3
  * @created 25/07/2024
- * @updated 04/10/2024
+ * @updated 18/04/2025
  */
 public class MastodonNotificationApiImpl extends MastodonBaseApi implements MastodonNotificationApi {
     public MastodonNotificationApiImpl(String urlBase, String accessToken) {
@@ -56,10 +56,10 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
                 log.debug("Se ejecutó la query: " + uri);
                 log.debug("Resultados encontrados: " + notifications.size());
 
-                List<String> linkHeaderList = response.getHttpHeaders().get("link");
+                List<String> linkHeaderList = response.getHttpHeaders().get("Link");
                 if ((linkHeaderList != null) && (!linkHeaderList.isEmpty())) {
                     String linkHeader = linkHeaderList.get(0);
-                    log.debug("Recibí este link: " + linkHeader);
+                    log.debug("Recibí este Link: " + linkHeader);
                     minId = this.extractMinId(linkHeader);
                     log.debug("Valor del min_id: " + minId);
                 }
