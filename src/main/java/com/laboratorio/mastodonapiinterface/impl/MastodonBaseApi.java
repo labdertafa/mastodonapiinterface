@@ -8,11 +8,11 @@ import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
 import com.laboratorio.mastodonapiinterface.utils.InstruccionInfo;
-import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,21 +24,21 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.3
  * @created 24/07/2024
- * @updated 18/04/2025
+ * @updated 04/05/2025
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
     protected final ApiClient client;
     protected final String urlBase;
     protected final String accessToken;
-    protected MastodonApiConfig apiConfig;
+    protected ReaderConfig apiConfig;
     protected final Gson gson;
 
     public MastodonBaseApi(String urlBase, String accessToken) {
         this.client = new ApiClient();
         this.urlBase = urlBase;
         this.accessToken = accessToken;
-        this.apiConfig = MastodonApiConfig.getInstance();
+        this.apiConfig = new ReaderConfig("config//mastodon_api.properties");
         this.gson = new Gson();
     }
     

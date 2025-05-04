@@ -1,9 +1,9 @@
 package com.laboratorio.api;
 
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import com.laboratorio.mastodonapiinterface.MastodonTrendingApi;
 import com.laboratorio.mastodonapiinterface.impl.MastodonTrendingApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonTag;
-import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 27/09/2024
+ * @updated 04/05/2025
  */
 public class MastodonTrendingApiTest {
     private String accessToken;
@@ -22,8 +22,9 @@ public class MastodonTrendingApiTest {
     
     @BeforeEach
     private void initTests() {
-        this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
-        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        ReaderConfig config = new ReaderConfig("config//mastodon_api.properties");
+        this.accessToken = config.getProperty("access_token");
+        String urlBase = config.getProperty("instancia_test");
         this.trendingApi = new MastodonTrendingApiImpl(urlBase, this.accessToken);
     }
     

@@ -1,12 +1,12 @@
 package com.laboratorio.api;
 
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import com.laboratorio.mastodonapiinterface.MastodonAccountApi;
 import com.laboratorio.mastodonapiinterface.impl.MastodonAccountApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonRelationship;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonAccountListResponse;
-import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 10/07/2024
- * @updated 18/04/2025
+ * @updated 04/05/2025
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MastodonAccountApiTest {
@@ -29,8 +29,9 @@ public class MastodonAccountApiTest {
 
     @BeforeEach
     private void initTest() {
-        this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
-        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        ReaderConfig config = new ReaderConfig("config//mastodon_api.properties");
+        this.accessToken = config.getProperty("access_token");
+        String urlBase = config.getProperty("instancia_test");
         this.accountApi = new MastodonAccountApiImpl(urlBase, this.accessToken);
     }
     
@@ -285,7 +286,8 @@ public class MastodonAccountApiTest {
     
     @Test
     public void getSuggestionsWithoutLimit() {
-        int defaultLimit = Integer.parseInt(MastodonApiConfig.getInstance().getProperty("getSuggestions_default_limit"));
+        ReaderConfig config = new ReaderConfig("config//mastodon_api.properties");
+        int defaultLimit = Integer.parseInt(config.getProperty("getSuggestions_default_limit"));
         
         List<MastodonAccount> accounts = this.accountApi.getSuggestions();
         

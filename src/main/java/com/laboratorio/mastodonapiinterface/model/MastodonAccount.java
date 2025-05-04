@@ -1,6 +1,6 @@
 package com.laboratorio.mastodonapiinterface.model;
 
-import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -15,7 +15,7 @@ import lombok.Setter;
  * @author Rafael
  * @version 1.0
  * @created 10/07/2024
- * @updated 16/08/2024
+ * @updated 04/05/2025
  */
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -67,7 +67,7 @@ public class MastodonAccount {
             } catch (Exception e) {
                 return false;
             }
-            MastodonApiConfig config = MastodonApiConfig.getInstance();
+            ReaderConfig config = new ReaderConfig("config//mastodon_api.properties");
             int maxInactividad = Integer.parseInt(config.getProperty("dias_inactividad_cuenta"));
             long nDays = ChronoUnit.DAYS.between(ultimaActividad, LocalDate.now());
             return Math.abs(nDays) <= maxInactividad;
@@ -81,7 +81,7 @@ public class MastodonAccount {
             return false;
         }
         
-        MastodonApiConfig config = MastodonApiConfig.getInstance();
+        ReaderConfig config = new ReaderConfig("config//mastodon_api.properties");
         int umbral = Integer.parseInt(config.getProperty("umbral_fuente_seguidores"));
         return this.followers_count >= umbral;
     }

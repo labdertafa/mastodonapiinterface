@@ -1,13 +1,13 @@
 package com.laboratorio.api;
 
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import com.laboratorio.mastodonapiinterface.MastodonStatusApi;
 import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.impl.MastodonStatusApiImpl;
 import com.laboratorio.mastodonapiinterface.model.MastodonAccount;
 import com.laboratorio.mastodonapiinterface.model.MastodonMediaAttachment;
 import com.laboratorio.mastodonapiinterface.model.MastodonStatus;
-import com.laboratorio.mastodonapiinterface.utils.MastodonApiConfig;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.2
  * @created 24/07/2024
- * @updated 18/04/2025
+ * @updated 04/05/2025
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -36,8 +36,9 @@ public class MastodonStatusApiTest {
     
     @BeforeEach
     private void initTests() {
-        this.accessToken = MastodonApiConfig.getInstance().getProperty("access_token");
-        String urlBase = MastodonApiConfig.getInstance().getProperty("instancia_test");
+        ReaderConfig config = new ReaderConfig("config//mastodon_api.properties");
+        this.accessToken = config.getProperty("access_token");
+        String urlBase = config.getProperty("instancia_test");
         this.statusApi = new MastodonStatusApiImpl(urlBase, this.accessToken);
     }
     
