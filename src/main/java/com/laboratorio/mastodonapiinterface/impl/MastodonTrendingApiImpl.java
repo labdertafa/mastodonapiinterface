@@ -1,8 +1,6 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -16,7 +14,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.3
  * @created 24/07/2024
- * @updated 04/10/2024
+ * @updated 05/06/2025
  */
 public class MastodonTrendingApiImpl extends MastodonBaseApi implements MastodonTrendingApi {
     public MastodonTrendingApiImpl(String urlBase, String accessToken) {
@@ -45,16 +43,11 @@ public class MastodonTrendingApiImpl extends MastodonBaseApi implements Mastodon
             request.addApiPathParam("limit", Integer.toString(usedLimit));
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getTrendingTags: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonTag>>(){}.getType());
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonTrendingApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando los trending topics de Mastodon", e);
         }
     }   
 }

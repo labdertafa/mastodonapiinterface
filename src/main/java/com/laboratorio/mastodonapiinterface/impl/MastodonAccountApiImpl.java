@@ -1,8 +1,6 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -19,9 +17,9 @@ import java.util.stream.Collectors;
 /**
  *
  * @author Rafael
- * @version 1.4
+ * @version 1.5
  * @created 10/07/2024
- * @updated 22/10/2024
+ * @updated 05/06/2025
  */
 public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonAccountApi {
     public MastodonAccountApiImpl(String urlBase, String accessToken) {
@@ -38,16 +36,11 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getAccountById: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), MastodonAccount.class);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando los datos de la cuenta Mastodon con id: " + id, e);
         }
     }
     
@@ -62,16 +55,11 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             request.addApiPathParam("acct", username);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getAccountByUsername: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), MastodonAccount.class);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando los datos de la cuenta Mastodon con username: " + username, e);
         }
     }
     
@@ -174,17 +162,12 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response followAccount: {}", response.getResponseStr());
             MastodonRelationship relationship = this.gson.fromJson(response.getResponseStr(), MastodonRelationship.class);
             
             return relationship.isFollowing();
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error siguiendo la cuenta Mastodon con id: " + id, e);
         }
     }
     
@@ -201,17 +184,12 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response unfollowAccount: {}", response.getResponseStr());
             MastodonRelationship relationship = this.gson.fromJson(response.getResponseStr(), MastodonRelationship.class);
             
             return !relationship.isFollowing();
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error dejando de seguir la cuenta Mastodon con id: " + id, e);
         }
     }
     
@@ -230,16 +208,11 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response checkrelationships: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonRelationship>>(){}.getType());
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando la relación entre cuentas Mastodon", e);
         }
     }
 
@@ -267,19 +240,14 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getSuggestions: {}", response.getResponseStr());
             List<MastodonSuggestion> suggestions = this.gson.fromJson(response.getResponseStr(), new TypeToken<List<MastodonSuggestion>>(){}.getType());
             
             return suggestions.stream()
                     .map(s -> s.getAccount())
                     .collect(Collectors.toList());
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando las sugerencias de seguimiento en Mastodon", e);
         }
     }
 
@@ -297,11 +265,8 @@ public class MastodonAccountApiImpl extends MastodonBaseApi implements MastodonA
             this.client.executeApiRequest(request);
             
             return true;
-        } catch (ApiClientException e) {
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonAccountApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error eliminando la sugerencia de seguimiento en Mastodon con el id: " + userId, e);
         }
     }
 }

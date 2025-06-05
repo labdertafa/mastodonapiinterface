@@ -1,10 +1,8 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.laboratorio.clientapilibrary.ApiClient;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -24,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.3
  * @created 24/07/2024
- * @updated 04/05/2025
+ * @updated 05/06/2025
  */
 public class MastodonBaseApi {
     protected static final Logger log = LogManager.getLogger(MastodonBaseApi.class);
@@ -40,13 +38,6 @@ public class MastodonBaseApi {
         this.accessToken = accessToken;
         this.apiConfig = new ReaderConfig("config//mastodon_api.properties");
         this.gson = new Gson();
-    }
-    
-    protected void logException(Exception e) {
-        log.error("Error: " + e.getMessage());
-        if (e.getCause() != null) {
-            log.error("Causa: " + e.getCause().getMessage());
-        }
     }
     
     // Función que extrae el max_id de la respuesta
@@ -108,14 +99,8 @@ public class MastodonBaseApi {
 
             // return accounts;
             return new MastodonAccountListResponse(maxId, accounts);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonBaseApi.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando una página de una cuenta en Mastodon. Uri: " + uri, e);
         }
     }
     

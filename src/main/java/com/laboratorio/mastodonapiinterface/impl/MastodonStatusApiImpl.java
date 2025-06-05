@@ -1,8 +1,6 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -21,9 +19,9 @@ import java.util.regex.Pattern;
 /**
  *
  * @author Rafael
- * @version 1.4
+ * @version 1.5
  * @created 24/07/2024
- * @updated 18/04/2025
+ * @updated 05/06/2025
  */
 public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonStatusApi {
     public MastodonStatusApiImpl(String urlBase, String accessToken) {
@@ -40,16 +38,11 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getStatusById: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando los datos de un estado Mastodon con id: " + id, e);
         }
     }
 
@@ -70,16 +63,11 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response deleteStatus: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error eliminado un estado en Mastodon con id: " + id, e);
         }
     }
     
@@ -102,35 +90,26 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response postStatusWithImage: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error posteando un estado en Mastodon: " + text, e);
         }
     }
     
     @Override
     public MastodonStatus postStatus(String text, String filePath) {
-        try {
-            if (filePath != null) {
-                MastodonMediaAttachment mediaAttachment = this.uploadImage(filePath);
-                return this.postStatusWithImage(text, mediaAttachment);
-            }
-            
-            return this.postStatusWithImage(text, null);
-        } catch (Exception e) {
-            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+        if (filePath != null) {
+            MastodonMediaAttachment mediaAttachment = this.uploadImage(filePath);
+            return this.postStatusWithImage(text, mediaAttachment);
         }
+
+        return this.postStatusWithImage(text, null);
     }
     
     @Override
-    public MastodonMediaAttachment uploadImage(String filePath) throws Exception {
+    public MastodonMediaAttachment uploadImage(String filePath) {
         String endpoint = this.apiConfig.getProperty("UploadImage_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("UploadImage_ok_status"));
         
@@ -142,16 +121,11 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             request.addFileFormData("file", filePath);
                         
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response uploadImage: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), MastodonMediaAttachment.class);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error subiendo una imagen a Mastodon: " + filePath, e);
         }
     }
     
@@ -215,16 +189,11 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             request.addApiHeader("Content-Type", "application/json");
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response executeSimplePost: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), MastodonStatus.class);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error ejeuctando la solicitud Mastodon: " + uri, e);
         }
     }
 
@@ -307,14 +276,8 @@ public class MastodonStatusApiImpl extends MastodonBaseApi implements MastodonSt
             }
 
             return new MastondonStatusListResponse(statuses, newNextPage);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonStatusApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando una página del timeline Mastodon", e);
         }
     }
 

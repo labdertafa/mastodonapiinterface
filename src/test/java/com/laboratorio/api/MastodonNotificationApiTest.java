@@ -1,8 +1,8 @@
 package com.laboratorio.api;
 
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import com.laboratorio.mastodonapiinterface.MastodonNotificationApi;
+import com.laboratorio.mastodonapiinterface.exception.MastondonApiException;
 import com.laboratorio.mastodonapiinterface.impl.MastodonNotificationApiImpl;
 import com.laboratorio.mastodonapiinterface.model.response.MastodonNotificationListResponse;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Rafael
  * @version 1.1
  * @created 25/07/2024
- * @updated 04/05/2025
+ * @updated 05/06/2025
  */
 public class MastodonNotificationApiTest {
     private String accessToken;
@@ -74,7 +74,7 @@ public class MastodonNotificationApiTest {
         
         this.notificationApi = new MastodonNotificationApiImpl(urlBase, "INVALID_TOKEN");
 
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(MastondonApiException.class, () -> {
             this.notificationApi.getAllNotifications();
         });
     }

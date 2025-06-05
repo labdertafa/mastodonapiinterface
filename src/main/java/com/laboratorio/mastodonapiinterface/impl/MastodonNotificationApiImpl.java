@@ -1,8 +1,6 @@
 package com.laboratorio.mastodonapiinterface.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -17,7 +15,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.3
  * @created 25/07/2024
- * @updated 18/04/2025
+ * @updated 05/06/2025
  */
 public class MastodonNotificationApiImpl extends MastodonBaseApi implements MastodonNotificationApi {
     public MastodonNotificationApiImpl(String urlBase, String accessToken) {
@@ -67,14 +65,8 @@ public class MastodonNotificationApiImpl extends MastodonBaseApi implements Mast
 
             // return accounts;
             return new MastodonNotificationListResponse(minId, notifications);
-        } catch (ApiClientException e) {
-            throw e;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (Exception e) {
-            logException(e);
-            throw new MastondonApiException(MastodonNotificationApiImpl.class.getName(), e.getMessage());
+            throw new MastondonApiException("Error recuperando una página de notificaciones en Mastodon", e);
         }
     }
 
